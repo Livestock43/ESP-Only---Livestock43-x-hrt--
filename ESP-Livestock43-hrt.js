@@ -240,8 +240,8 @@ function cripple_window(_window) {
                     //inputs[SCOPE] = 1;
                 }
 
-                ty = getDir(controls.object.position.z, controls.object.position.x, target.z3, target.x3);
-                tx = getXDire(controls.object.position.x, controls.object.position.y, controls.object.position.z, target.x3, y, target.z3);
+                //ty = getDir(controls.object.position.z, controls.object.position.x, target.z3, target.x3);
+                //tx = getXDire(controls.object.position.x, controls.object.position.y, controls.object.position.z, target.x3, y, target.z3);
 
                 // perfect recoil control
                 //tx -= .3 * me[recoilAnimY];

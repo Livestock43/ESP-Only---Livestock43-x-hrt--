@@ -298,13 +298,7 @@ function cripple_window(_window) {
                         let y = ymax;
                         original_fillText.apply(c, [e.name, x, y]);
                         original_strokeText.apply(c, [e.name, x, y]);
-                        c.font = "30px Sans-serif";
-                        y += 35;
-                        original_fillText.apply(c, [e.weapon.name, x, y]);
-                        original_strokeText.apply(c, [e.weapon.name, x, y]);
-                        y += 35;
-                        original_fillText.apply(c, [e.health + ' HP', x, y]);
-                        original_strokeText.apply(c, [e.health + ' HP', x, y]);
+                        c.font = "30px Courier New";
  
                         original_restore.apply(c, []);
  

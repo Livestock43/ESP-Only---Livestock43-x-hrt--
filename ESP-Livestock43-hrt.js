@@ -309,13 +309,13 @@ function cripple_window(_window) {
                         c.fillStyle = original_fillStyle;
 
                         // skelly chams
-                        //if (e[legMeshes][0]) {
-                            //let material = e[legMeshes][0].material;
-                            //material.alphaTest = 1;
-                            //material.depthTest = false;
-                            //material.fog = false;
-                            //material.emissive.g = 1;
-                            //material.wireframe = true;
+                        if (e[legMeshes][0]) {
+                            let material = e[legMeshes][0].material;
+                            material.alphaTest = 1;
+                            material.depthTest = false;
+                            material.fog = false;
+                            material.emissive.g = 1;
+                            material.wireframe = true;
                         }
                     }
                 };

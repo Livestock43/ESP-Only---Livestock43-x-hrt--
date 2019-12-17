@@ -1,7 +1,9 @@
 How to use:
--Download the attached zip file
--Extensions>Enable Developer Mode>Drag the zip file into extensions
-Enjoy!
+-Download the loader
+
+Place loader in extensions > enable developer mode > Enjoy!
+
+
 (Livestock43 x hrt)
 
 

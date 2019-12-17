@@ -3,7 +3,7 @@ How to use:
 -Download the loader
 
 
-Place loader in extensions > enable developer mode > Enjoy!
+-Enable Developer Mode > Place the loader in extensions > Enjoy!
 
 
 (Livestock43 x hrt)

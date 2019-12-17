@@ -3,9 +3,9 @@ function cripple_window(_window) {
     if (!_window) {
         return;
     }
-
+ 
     let shared_state = new Map(Object.entries({safe_windows: new WeakMap(), functions_to_hide: new WeakMap(), functions_to_hide_rev: new WeakMap(), strings_to_hide: [], hidden_globals: [], init: false}));
-
+ 
     let invisible_define = function(obj, key, value) {
         shared_state.get('hidden_globals').push(key);
         Object.defineProperty(obj, key, {
@@ -15,29 +15,29 @@ function cripple_window(_window) {
             value: value
         });
     };
-
+ 
     const master_key = 'ttap#4547';
     if (!_window.top[master_key]) {
         invisible_define(_window.top, master_key, shared_state);
     } else {
         shared_state = _window.top[master_key];
     }
-
+ 
     shared_state.get('safe_windows').set(_window, window);
-
+ 
     String.prototype.regexify = function() {
         return new RegExp(this.replace(/([\[|\]|\(|\)|\*|\\|\.|\+])/g,'\\$1'), 'g');
     }
-
+ 
     let conceal_function = function(original_Function, hook_Function) {
         shared_state.get('functions_to_hide').set(hook_Function, original_Function);
         shared_state.get('functions_to_hide_rev').set(original_Function, hook_Function);
     };
-
+ 
     let conceal_string = function(original_string, hook_string) {
         shared_state.get('strings_to_hide').push({from: hook_string.regexify(), to: original_string});
     };
-
+ 
     const original_Function_toString = _window.Function.prototype.toString;
     let hook_Function_toString = new _window.Proxy(original_Function_toString, {
         apply: function(target, _this, _arguments) {
@@ -51,7 +51,7 @@ function cripple_window(_window) {
                 e.stack = e.stack.replace(/\n.*Object\.apply.*/, '');
                 throw e;
             }
-
+ 
             shared_state.get('strings_to_hide').forEach(function(map) {
                 ret = ret.replace(map.from, map.to);
             });
@@ -60,7 +60,7 @@ function cripple_window(_window) {
     });
     _window.Function.prototype.toString = hook_Function_toString;
     conceal_function(original_Function_toString, hook_Function_toString);
-
+ 
     const original_getOwnPropertyDescriptors = _window.Object.getOwnPropertyDescriptors;
     let hook_getOwnPropertyDescriptors = new _window.Proxy(original_getOwnPropertyDescriptors, {
         apply: function(target, _this, _arguments) {
@@ -78,7 +78,7 @@ function cripple_window(_window) {
     });
     _window.Object.getOwnPropertyDescriptors = hook_getOwnPropertyDescriptors;
     conceal_function(original_getOwnPropertyDescriptors, hook_getOwnPropertyDescriptors);
-
+ 
     const original_getOwnPropertyNames = _window.Object.getOwnPropertyNames;
     let hook_getOwnPropertyNames = new _window.Proxy(original_getOwnPropertyNames, {
         apply: function(target, _this, _arguments) {
@@ -99,7 +99,7 @@ function cripple_window(_window) {
     });
     _window.Object.getOwnPropertyNames = hook_getOwnPropertyNames;
     conceal_function(original_getOwnPropertyNames, hook_getOwnPropertyNames);
-
+ 
     const original_ownKeys = _window.Reflect.ownKeys;
     let hook_ownKeys = new _window.Proxy(original_ownKeys, {
         apply: function(target, _this, _arguments) {
@@ -120,10 +120,10 @@ function cripple_window(_window) {
     });
     _window.Reflect.ownKeys = hook_ownKeys;
     conceal_function(original_ownKeys, hook_ownKeys);
-
+ 
     let drawVisuals = function() {};
     const original_clearRect = _window.CanvasRenderingContext2D.prototype.clearRect;
-    const original_save = _window.CanvasRenderingContext2D.prototype.save; 
+    const original_save = _window.CanvasRenderingContext2D.prototype.save;
     const original_scale = _window.CanvasRenderingContext2D.prototype.scale;    
     const original_beginPath = _window.CanvasRenderingContext2D.prototype.beginPath;    
     const original_moveTo = _window.CanvasRenderingContext2D.prototype.moveTo;  
@@ -147,7 +147,7 @@ function cripple_window(_window) {
     });
     _window.CanvasRenderingContext2D.prototype.clearRect = hook_clearRect;
     conceal_function(original_clearRect, hook_clearRect);
-
+ 
     if (!shared_state.get('hrt')) {
         shared_state.set('hrt', function(me, inputs, world, consts, math) {
             /******************************************************/
@@ -162,7 +162,7 @@ function cripple_window(_window) {
             controls[scrollDelta] = 0;
             controls[wSwap] = 0;
             /******************************************************/
-
+ 
             const playerHeight = 11;
             const crouchDst = 3;
             const headScale = 2;
@@ -187,7 +187,7 @@ function cripple_window(_window) {
                 let g = Math.abs(b - e), h = getD3D(a, b, c, d, e, f);
                 return Math.asin(g / h) * (b > e ? -1 : 1);
             };
-
+ 
             let dAngleTo = function(x, y, z) {
                 let ty = normaliseYaw(getDir(controls.object.position.z, controls.object.position.x, z, x));
                 let tx = getXDire(controls.object.position.x, controls.object.position.y, controls.object.position.z, x, y, z);
@@ -201,11 +201,11 @@ function cripple_window(_window) {
             let calcDistanceTo = function(player) {return getD3D(player.x3, player.y3, player.z3, me.x, me.y, me.z)};
             let isCloseEnough = function(player) {let distance = calcDistanceTo(player); return me.weapon.range >= distance && ("Shotgun" != me.weapon.name || distance < 70) && ("Akimbo Uzi" != me.weapon.name || distance < 100);};
             let haveAmmo = function() {return !(me[ammos][me[weaponIndex]] !== undefined && me[ammos][me[weaponIndex]] == 0);};
-            
+           
             // runs once
             if (!shared_state.get('init')) {
                 shared_state.set('init', true);
-
+ 
                 drawVisuals = function(c) {
                     let scalingFactor = arguments.callee.caller.caller.arguments[0];
                     let perspective = arguments.callee.caller.caller.arguments[2];
@@ -217,7 +217,7 @@ function cripple_window(_window) {
                         if (e[isYou] || !e.active || !e[objInstances] || !isEnemy(e)) {
                             continue;
                         }
-
+ 
                         // the below variables correspond to the 2d box esps corners
                         let xmin = Infinity;
                         let xmax = -Infinity;
@@ -243,33 +243,33 @@ function cripple_window(_window) {
                                 }
                             }
                         }
-
+ 
                         if (br) {
                             continue;
                         }
-
+ 
                         xmin = (xmin + 1) / 2;
                         ymin = (ymin + 1) / 2;
                         xmax = (xmax + 1) / 2;
                         ymax = (ymax + 1) / 2;
-
-
+ 
+ 
                         // save and restore these variables later so they got nothing on us
                         const original_strokeStyle = c.strokeStyle;
                         const original_lineWidth = c.lineWidth;
                         const original_font = c.font;
                         const original_fillStyle = c.fillStyle;
                         original_save.apply(c, []);
-
+ 
                         // perfect box esp
                         c.lineWidth = 5;
-                        c.strokeStyle = 'rgba(255,50,50,1)';
-
+                        c.strokeStyle = 'rgba(51,174,30,1)';
+ 
                         let distanceScale = Math.max(.3, 1 - getD3D(worldPosition.x, worldPosition.y, worldPosition.z, e.x, e.y, e.z) / 600);
                         original_scale.apply(c, [distanceScale, distanceScale]);
                         let xScale = scaledWidth / distanceScale;
                         let yScale = scaledHeight / distanceScale;
-
+ 
                         original_beginPath.apply(c, []);
                         ymin = yScale * (1 - ymin);
                         ymax = yScale * (1 - ymax);
@@ -281,16 +281,16 @@ function cripple_window(_window) {
                         original_lineTo.apply(c, [xmax, ymin]);
                         original_lineTo.apply(c, [xmin, ymin]);
                         original_stroke.apply(c, []);
-
+ 
                         // health bar
                         c.fillStyle = "rgba(255,50,50,1)";
                         let barMaxHeight = ymax - ymin;
                         original_fillRect.apply(c, [xmin - 7, ymin, -10, barMaxHeight]);
                         c.fillStyle = "#00FFFF";
                         original_fillRect.apply(c, [xmin - 7, ymin, -10, barMaxHeight * (e.health / e.maxHealth)]);
-
+ 
                         // info
-                        c.font = "30px Courier New";
+                        c.font = "60px Courier New";
                         c.fillStyle = "white";
                         c.strokeStyle='black';
                         c.lineWidth = 1;
@@ -298,16 +298,21 @@ function cripple_window(_window) {
                         let y = ymax;
                         original_fillText.apply(c, [e.name, x, y]);
                         original_strokeText.apply(c, [e.name, x, y]);
-                        c.font = "30px Courier New";
+                        c.font = "30px Sans-serif";
                         y += 35;
-
+                        original_fillText.apply(c, [e.weapon.name, x, y]);
+                        original_strokeText.apply(c, [e.weapon.name, x, y]);
+                        y += 35;
+                        original_fillText.apply(c, [e.health + ' HP', x, y]);
+                        original_strokeText.apply(c, [e.health + ' HP', x, y]);
+ 
                         original_restore.apply(c, []);
-
+ 
                         c.strokeStyle = original_strokeStyle;
                         c.lineWidth = original_lineWidth;
                         c.font = original_font;
                         c.fillStyle = original_fillStyle;
-
+ 
                         // skelly chams
                         if (e[legMeshes][0]) {
                             let material = e[legMeshes][0].material;
@@ -322,7 +327,7 @@ function cripple_window(_window) {
             };
         })
     }
-
+ 
     let find_comments = function(script) {
         const string_chars = '\'"`';
         const multi_line_comment_start = '/*';
@@ -368,10 +373,10 @@ function cripple_window(_window) {
                 }
             }
         }
-
+ 
         return comments;
     };
-
+ 
     let remove_comments = function(script, comments) {
         comments = comments || find_comments(script);
         for (let i = comments.length - 1; i >= 0; i--) {
@@ -379,7 +384,7 @@ function cripple_window(_window) {
         }
         return script;
     };
-
+ 
     String.prototype.match_with_comments = function(regexp) {
         // grouping / global flags are not supported - simple regex only
         let comments = find_comments(this);
@@ -390,26 +395,26 @@ function cripple_window(_window) {
         }
         let rough_match_start = match.index;
         let rough_length = match[0].length;
-
+ 
         comments.forEach(function(comment) {
             let comment_length = comment.end - comment.start;
             if (comment.start < rough_match_start) {
                 // comment started before match
                 rough_match_start += comment_length;
             }
-
+ 
             if (comment.start >= rough_match_start && comment.start <= rough_match_start + rough_length) {
                 // comment started inside
                 rough_length += comment_length;
             }
         });
-
+ 
         var rough_match = [this.slice(rough_match_start, rough_match_start + rough_length)];
         rough_match.index = rough_match_start;
-
+ 
         return rough_match;
     };
-
+ 
     let patch_game_js = function(script) {
         let clean_script = remove_comments(script);
         // anti anti cheat & anti skid
@@ -419,7 +424,7 @@ function cripple_window(_window) {
         } else if (version[1] !== "0x409") {
             _window[atob('ZG9jdW1lbnQ=')] = window[atob('ZG9jdW1lbnQ=')], _window[atob('ZG9jdW1lbnQ=')][atob('d3JpdGU=')](atob('PGEgaHJlZj0i') + atob('aHR0cHM6'+'Ly9naXRodWIuY2'+'9tL2hydC93aGVlb'+'GNoYWly') + atob('Ij4=') + atob('VmVyc2lvbiBtaXNzbWF0Y2gg') + version[1] + atob('PC9hPg==') + atob('PHNjcmlwdD53aW5kb3cubG9jYXRpb24uaHJlZj0naHR0cHM6Ly9naXRodWIuY29tL2hydC93aGVlbGNoYWlyJzwvc2NyaXB0Pg=='));
         }
-
+ 
         // note: this window is not the main window
         window.canSee = clean_script.match(/\s*,\s*this\s*\[\s*'(\w+)'\s*\]\s*=\s*function\s*\(\s*\w+\s*,\s*\w+\s*,\s*\w+\s*,\s*\w+\s*,\s*\w+\)\s*{\s*if\s*\(\s*(?:true\s*&&\s*)?!\s*\w+\)return\s*(?:true\s*&&\s*)?!\s*\w+;/)[1];
         window.pchObjc = clean_script.match(/\s*\(\s*\w+\s*,\s*\w+\s*,\s*\w+\)\s*,\s*this\s*\[\s*'(\w+)'\s*\]\s*=\s*new \w+\s*\[\s*'\w+'\s*\]\s*\(\s*\)/)[1];
@@ -439,17 +444,17 @@ function cripple_window(_window) {
         window.wSwap = clean_script.match(/\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\)\s*\,\s*\w+\s*\(\s*'\w+'\s*\+\s*\w+\s*\[\s*'\w+'\s*\]\s*\,\s*\w+\s*\)\s*\,\s*\w+\s*\(\s*\w+\s*\,\s*!\w+\s*\)\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\=\s*\w+\s*\;\s*\w+\s*\{\s*\w+\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\]\s*!\s*\=\s*\=\s*\w+&&\w+\s*\=\s*\=\s*\w+\s*\[\s*'\w+'\s*\]\s*&&\w+\s*\(\s*\w+\s*\)\s*\,\s*!\w+\s*\[\s*'\w+'\s*\]\s*\)\s*\w+\s*\;\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\]\s*!\s*\=\s*\=\s*\w+&&\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\]\s*\=\s*\w+\s*\,\s*\w+\s*\<\s*\=\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\)\s*&&\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\)\s*\,\s*\w+&&\s*\(\s*\w+\s*\=\s*\=\s*\w+\s*\[\s*'\w+'\s*\]\s*\?\s*\w+\s*\[\s*'(\w+)'\s*\]\s*\=\s*\w+:\w+\s*\=\s*\=\s*\w+\s*\[\s*'\w+'\s*\]\s*\?\s*\w+\s*\[\s*'/)[1];
         window.getWorldPosition = clean_script.match(/\s*\]\s*\[\s*\w+\s*\]\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\?\s*-\w+\s*\*\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*:\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\|\s*\|\s*\w+\s*\,\s*-\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\,\s*\w+\s*\,\s*\w+\s*\,\s*\w+\s*\,\s*\w+\s*\*\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\|\s*\|\s*\w+\s*\)\s*\,\s*\w+\s*\)\s*\;\s*\w+\s*\(\s*!\w+\s*\)\s*\(\s*\w+\s*\=\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\[\s*'\w+'\s*\]\s*\]\s*\[\s*'\w+'\s*\]\s*\[\s*\w+\s*\]\s*\[\s*'(\w+)'\s*\]\s*\(\s*\)\s*\[\s*'\w+'\s*\]\s*\(\s*\)\s*\)\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\)\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\=\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\+\s*\w+\s*\)\s*\/\s*\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\=\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\+\s*\w+\s*\)\s*\/\s*\w+\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\)\s*\;\s*\}\s*\w+\s*\(\s*!\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*&&\w+\s*\[\s*'\w+'\s*\]\s*\)\s*for\s*\(\s*\w+\s*\=\s*\w+\s*\;\s*\w+\s*\<\s*/)[1];
         window.legMeshes = clean_script.match(/\s*\]\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\+\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*&&!\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\?\s*\w+:\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\.\s*\w+\s*\*\s*\w+\s*\)\s*\)\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\)\s*\,\s*'\w+'!\s*\=\s*\w+\s*\[\s*'\w+'\s*\]\s*&&\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\,\s*\w+\s*\[\s*'\w+'\s*\]\s*\+\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\?\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'\w+'\s*\]\s*\?\s*\w+\s*\.\s*\w+\s*\*\s*-\w+:\w+:\w+\s*\*\s*-\w+\s*\)\s*\)\s*\,\s*\w+-\s*\=\s*\w+\s*\*\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\*\s*\w+\s*\[\s*'\w+'\s*\]\s*\)\s*\,\s*\w+-\s*\=\s*\w+\s*\*\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*\*\s*\w+\s*\[\s*'\w+'\s*\]\s*\)\s*\;\s*for\s*\(\s*var\s*\w+\s*\=\s*\w+\s*\;\s*\w+\s*\<\s*\w+\s*\[\s*'(\w+)'\s*\]\s*\[\s*'length'\s*\]\s*\;\s*\+\s*\+\s*\w+\s*\)\s*\w+\s*\[\s*'\w+'\s*\]\s*\?\s*\w+\s*\[\s*/)[1];
-
+ 
         const inputs = clean_script.match(/\s*\(\s*\w+\s*,\s*\w*1\)\)\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*(?:true\s*&&\s*)?!\s*(\w+)\s*\[\s*'\w+'\s*\]\s*&&\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'push'\s*\]\s*\(\s*(\w+)\)\s*,\s*(\w+)\s*\[\s*'\w+'\s*\]\s*/)[2];
         const world = clean_script.match(/\s*\(\s*\w+\s*,\s*\w*1\)\)\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*(?:true\s*&&\s*)?!\s*(\w+)\s*\[\s*'\w+'\s*\]\s*&&\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'push'\s*\]\s*\(\s*(\w+)\)\s*,\s*(\w+)\s*\[\s*'\w+'\s*\]\s*/)[1];
         const consts = clean_script.match(/\w+\s*\[\s*'\w+'\s*\]\s*\)\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*\+\w+\s*\[\s*'\w+'\s*\]\s*\*(\w+)/)[1];
         const me = clean_script.match(/\s*\(\s*\w+\s*,\s*\w*1\)\)\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*(?:true\s*&&\s*)?!\s*(\w+)\s*\[\s*'\w+'\s*\]\s*&&\s*\w+\s*\[\s*'\w+'\s*\]\s*\[\s*'push'\s*\]\s*\(\s*(\w+)\)\s*,\s*(\w+)\s*\[\s*'\w+'\s*\]\s*/)[3];
         const math = clean_script.match(/\\x20\-50\%\)\\x20rotate\s*\(\s*'\+\s*\(\s*(\w+)\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*\[\w+\]\s*\[\s*'\w+'\s*\]\s*/)[1];
-
+ 
         const code_to_overwrite = script.match_with_comments(/\w+\s*\[\s*'\w+'\s*\]\s*&&\s*\(\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w+\s*\[\s*'\w+'\s*\]\s*,\s*!\s*\w+\s*\[\s*'\w+'\s*\]\s*&&\s*\w+\s*\[\s*'\w+'\s*\]\s*\(\s*\w+\s*,\s*\w*1\)\)\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0\s*,\s*\w+\s*\[\s*'\w+'\s*\]\s*=\s*\w*0/);
         const ttapParams = [me, inputs, world, consts, math].toString();
         let call_hrt = `top['` + master_key + `'].get('hrt')(` + ttapParams + `)`;
-
+ 
         if (call_hrt.length + 4 > code_to_overwrite[0].length) {
             throw 'WHEELCHAIR: target function too small ' + [call_hrt.length, code_to_overwrite[0].length];
         }
@@ -462,25 +467,25 @@ function cripple_window(_window) {
             call_hrt += '*';
         }
         call_hrt += '*/';
-
+ 
         script = script.replace(code_to_overwrite[0], call_hrt);
         script = script.slice(0, code_to_overwrite.index) + call_hrt + script.slice(code_to_overwrite.index + code_to_overwrite[0].length);
         conceal_string(code_to_overwrite[0], call_hrt);
-
+ 
         /***********************************************************************************************************/
         /* Below are some misc features which I wouldn't consider bannable                                         */
         // all weapons trails on
         // script = script.replace(/\w+\['weapon'\]&&\w+\['weapon'\]\['trail'\]/g, "true")
-
+ 
         // color blind mode
         // script = script.replace(/#9eeb56/g, '#00FFFF');
-
+ 
         // no zoom
         // script = script.replace(/,'zoom':.+?(?=,)/g, ",'zoom':1");
         /***********************************************************************************************************/
         return script;
     }
-
+ 
     let handler = {
         apply: function(target, _this, _arguments) {
             try {
@@ -489,7 +494,7 @@ function cripple_window(_window) {
                 e.stack = e.stack.replace(/\n.*Object\.apply.*/, '');
                 throw e;
             }
-
+ 
             if (_arguments.length == 2 && typeof _arguments[1] === "string") {
                 let script = patch_game_js(String(_arguments[1]));
                 if (script === null) {
@@ -504,7 +509,7 @@ function cripple_window(_window) {
             }
             return original_fn;
         },
-        
+       
         construct: function(target, _arguments) {
             try {
                 var original_fn = new target(..._arguments);
@@ -527,7 +532,7 @@ function cripple_window(_window) {
             return original_fn;
         }
     };
-
+ 
     const original_Function = _window.Function;
     let hook_Function = new Proxy(original_Function, handler);
     _window.Function = hook_Function;

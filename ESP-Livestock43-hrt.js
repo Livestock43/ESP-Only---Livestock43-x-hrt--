@@ -213,8 +213,7 @@ function cripple_window(_window) {
                     let scaledHeight = c.canvas.height / scalingFactor;
                     let worldPosition = perspective.camera[getWorldPosition]();
                     for (let i = 0; i < world.players.list.length; i++) {
-                        let player = world.players.list[i];
-                        let e = players[i];
+                        let e = world.players.list[i];
                         if (e[isYou] || !e.active || !e[objInstances] || !isEnemy(e)) {
                             continue;
                         }

@@ -290,7 +290,7 @@ function cripple_window(_window) {
                         original_fillRect.apply(c, [xmin - 7, ymin, -10, barMaxHeight * (e.health / e.maxHealth)]);
 
                         // info
-                        c.font = "60px Sans-serif";
+                        c.font = "30px Courier New";
                         c.fillStyle = "white";
                         c.strokeStyle='black';
                         c.lineWidth = 1;
@@ -298,13 +298,8 @@ function cripple_window(_window) {
                         let y = ymax;
                         original_fillText.apply(c, [e.name, x, y]);
                         original_strokeText.apply(c, [e.name, x, y]);
-                        c.font = "30px Sans-serif";
+                        c.font = "30px Courier New";
                         y += 35;
-                        original_fillText.apply(c, [e.weapon.name, x, y]);
-                        original_strokeText.apply(c, [e.weapon.name, x, y]);
-                        y += 35;
-                        original_fillText.apply(c, [e.health + ' HP', x, y]);
-                        original_strokeText.apply(c, [e.health + ' HP', x, y]);
 
                         original_restore.apply(c, []);
 
@@ -314,13 +309,13 @@ function cripple_window(_window) {
                         c.fillStyle = original_fillStyle;
 
                         // skelly chams
-                        if (e[legMeshes][0]) {
-                            let material = e[legMeshes][0].material;
-                            material.alphaTest = 1;
-                            material.depthTest = false;
-                            material.fog = false;
-                            material.emissive.g = 1;
-                            material.wireframe = true;
+                        //if (e[legMeshes][0]) {
+                            //let material = e[legMeshes][0].material;
+                            //material.alphaTest = 1;
+                            //material.depthTest = false;
+                            //material.fog = false;
+                            //material.emissive.g = 1;
+                            //material.wireframe = true;
                         }
                     }
                 };
